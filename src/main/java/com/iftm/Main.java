@@ -4,13 +4,48 @@ import java.util.Random;
 public class Main {
     public static void main(String[] args) {
 
+        int[] arrayCounters = new int[5];
         String[][] period1 = makeMatrix();
-        // String[][] period2 = makeMatrix();
-        // String[][] period3 = makeMatrix();
-        // String[][] period4 = makeMatrix();
-        // String[][] period5 = makeMatrix();
+        String[][] period2 = makeMatrix();
+        String[][] period3 = makeMatrix();
+        String[][] period4 = makeMatrix();
+        String[][] period5 = makeMatrix();
+
+        arrayCounters[0] = Integer.parseInt(period1[0][29]);
+        arrayCounters[1] = Integer.parseInt(period2[0][29]);
+        arrayCounters[2] = Integer.parseInt(period3[0][29]);
+        arrayCounters[3] = Integer.parseInt(period4[0][29]);
+        arrayCounters[4] = Integer.parseInt(period5[0][29]);
+
+        try {
+            sortAndDisplay(arrayCounters);
+        } catch (NumberFormatException e) {
+            System.out.println("Erro ao converter para inteiro: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Ocorreu um erro: " + e.getMessage());
+        }
+
+    }
+
+    public static void sortAndDisplay(int[] arrayCounters) {
+
+        for (int i = 0; i < arrayCounters.length - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < arrayCounters.length; j++) {
+                if (arrayCounters[j] < arrayCounters[minIndex]) {
+                    minIndex = j;
+                }
+            }
+            int temp = arrayCounters[minIndex];
+            arrayCounters[minIndex] = arrayCounters[i];
+            arrayCounters[i] = temp;
+        }
 
 
+        System.out.println("Valores ordenados:");
+        for (int i = 0; i < arrayCounters.length; i++) {
+            System.out.println("Period " + (i + 1) + " Conflict Counter: " + arrayCounters[i]);
+        }
     }
 
     public static String[][] makeMatrix(){
@@ -20,39 +55,74 @@ public class Main {
         String[][] matrixProf = {{"WE"}, {"EE"}, {"EA"}, {"CM"}, {"WP"}, {"CB"}, {"AA"}, {"CE"}, {"CS"},
                 {"HR"}, {"PA"}, {"RA"}, {"LI"}, {"VP"}};
 
-        String[] vetorDisc ={"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
-                "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21",
-                "22", "23", "24"};
+        String[][] matrixDisc ={{"00", "01", "02", "03", "04"}, {"05", "06", "07", "08", "09"}, {"10",
+                "11", "12", "13", "14"}, {"15", "16", "17", "18", "19"}, {"20", "21",
+                "22", "23", "24"}};
 
-        int columns = 29; // mais 4 para os intervalos
+        int[] discTimes = new int[5];
+        int conflictCounter = 0;
+
+        int columns = 30; // mais 4 para os intervalos // = + 1 para counter
         String[][] matrix = new String[4][columns];
         int prof = 0;
+        int disc = 0;
+        int supportIndex = 0;
 
-        for(int i = 0; i < columns; i++){
+
+        for(int i = 0; i < columns - 1; i++){
 
             if (i == 5 || i == 11 || i == 17 || i == 23) {
-                matrix[0][i] = "\s";
-                matrix[1][i] = "\s";
-                matrix[2][i] = "\s";
-                matrix[3][i] = "\s";
+                matrix[0][i] = " ";
+                matrix[1][i] = " ";
+                matrix[2][i] = " ";
+                matrix[3][i] = " ";
                 continue;
             }
 
-            int disc = random.nextInt(25);
+            switch (i) {
+                case 0: case 1: case 2: case 3: case 4:
+                    supportIndex = 0;
+                    break;
+                case 6: case 7: case 8: case 9: case 10:
+                    supportIndex = 1;
+                    break;
+                case 12: case 13: case 14: case 15: case 16:
+                    supportIndex = 2;
+                    break;
+                case 18: case 19: case 20: case 21: case 22:
+                    supportIndex = 3;
+                    break;
+                case 24: case 25: case 26: case 27: case 28:
+                    supportIndex = 4;
+                    break;
+                default:
+                    break;
+            }
+
+            disc = random.nextInt(5);
+            while(matrixDisc[supportIndex][disc].equals(" ")){
+                conflictCounter++;
+                disc = random.nextInt(5);
+            }
+
 
             for (int j = 0; j < 2; j++) {
 
                 prof = random.nextInt(12);
+                do{
+                    disc = random.nextInt(5);
+                }while(matrixDisc[supportIndex][disc] == " ");
 
 
                 if (i > 4 && matrixProf[prof].length > 1) {
 
                     while (checkEquality(i, matrixProf[prof])) {
+                        conflictCounter++;
                         prof = random.nextInt(12);
                     }
                 }
 
-                String union = matrixProf[prof][0] + vetorDisc[disc];
+                String union = matrixProf[prof][0] + matrixDisc[supportIndex][disc];
                 if(j == 0){
                     matrix[0][i] = union;
                     matrix[1][i] = union;
@@ -61,6 +131,15 @@ public class Main {
                     matrix[3][i] = union;
                 }
 
+                discTimes[disc] += 1;
+
+            }
+
+            if(discTimes[disc] >= 4)
+                matrixDisc[supportIndex][disc] = " ";
+
+            if(i == 4 || i == 9 || i == 14 || i == 19 || i == 24){
+                discTimes = new int[5];
             }
 
             String[] newArray = new String[matrixProf[prof].length + 1];
@@ -70,7 +149,8 @@ public class Main {
         }
 
         showMatrix(matrix);
-
+        System.out.println();
+        matrix[0][29] = String.valueOf(conflictCounter);
         return matrix;
     }
 
@@ -83,6 +163,7 @@ public class Main {
             System.out.println();
         }
     }
+
 
     private static boolean checkEquality(int i, String[] weekDay) {
 
@@ -100,7 +181,7 @@ public class Main {
                 return true;
             }
         }
-        System.out.println();
+
         return false;
     }
 
