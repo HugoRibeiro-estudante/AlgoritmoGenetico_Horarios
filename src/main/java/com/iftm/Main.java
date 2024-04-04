@@ -59,6 +59,7 @@ public class Main {
                 "11", "12", "13", "14"}, {"15", "16", "17", "18", "19"}, {"20", "21",
                 "22", "23", "24"}};
 
+        //array para contar vezes que uma disciplina foi sorteada
         int[] discTimes = new int[5];
         int conflictCounter = 0;
 
@@ -68,7 +69,7 @@ public class Main {
         int disc = 0;
         int supportIndex = 0;
 
-
+        
         for(int i = 0; i < columns - 1; i++){
 
             if (i == 5 || i == 11 || i == 17 || i == 23) {
@@ -79,6 +80,7 @@ public class Main {
                 continue;
             }
 
+            //definindo dentro do matrixDisc em qual array esta a posição de i [[],[]]
             switch (i) {
                 case 0: case 1: case 2: case 3: case 4:
                     supportIndex = 0;
@@ -105,7 +107,7 @@ public class Main {
                 disc = random.nextInt(5);
             }
 
-
+            // definindo os 4 horarios dentro dia da semana
             for (int j = 0; j < 2; j++) {
 
                 prof = random.nextInt(12);
@@ -130,7 +132,7 @@ public class Main {
                     matrix[2][i] = union;
                     matrix[3][i] = union;
                 }
-
+                
                 discTimes[disc] += 1;
 
             }
