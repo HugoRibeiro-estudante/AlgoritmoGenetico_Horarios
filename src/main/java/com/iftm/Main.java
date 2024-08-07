@@ -2,6 +2,7 @@ package com.iftm;
 
 import java.util.Random;
 
+
 public class Main {
     public static void main(String[] args) {
         int[] arrayCounters = new int[5];
